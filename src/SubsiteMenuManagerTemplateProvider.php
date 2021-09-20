@@ -17,6 +17,10 @@ class SubsiteMenuManagerTemplateProvider implements TemplateGlobalProvider
 
     public static function SubsiteMenuSet($name)
     {
+        $subsiteID =  SubsiteState::singleton()->getSubsiteId();
+        if($subsiteID > 0){
+            $name .= '-' . $subsiteID;
+        }
         return MenuSet::get()->filter(array(
             'Name' => $name,
             'SubsiteID' => SubsiteState::singleton()->getSubsiteId()
