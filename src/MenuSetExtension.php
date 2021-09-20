@@ -27,28 +27,4 @@ class MenuSetExtension extends DataExtension
             $this->owner->SubsiteID = SubsiteState::singleton()->getSubsiteId();
         }
     }
-
-    public function requireDefaultRecords()
-    {
-        $subsites = Subsite::all_sites();
-        $defaultSetNames = $this->owner->config()->get('default_sets') ?: array();
-        $subsites->each(function ($subsite) use ($defaultSetNames) {
-            Subsite::changeSubsite($subsite->ID);
-
-            foreach ($defaultSetNames as $name) {
-                $existingRecord = MenuSet::get()->filter([
-                    'Name' => $name,
-                    'SubsiteID' => $subsite->ID,
-                ])->first();
-
-                if (!$existingRecord) {
-                    $set = new MenuSet();
-                    $set->Name = $name;
-                    $set->write();
-
-                    DB::alteration_message("MenuSet '$name' created for Subsite", 'created');
-                }
-            }
-        });
-    }
 }
