@@ -4,11 +4,11 @@ namespace Guttmann\SilverStripe;
 
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\HiddenField;
-use SilverStripe\ORM\DataExtension;
+use SilverStripe\Core\Extension;
 use SilverStripe\Subsites\Model\Subsite;
 use SilverStripe\Subsites\State\SubsiteState;
 
-class MenuItemExtension extends DataExtension
+class MenuItemExtension extends Extension
 {
     private static $has_one = [
         'Subsite' => Subsite::class

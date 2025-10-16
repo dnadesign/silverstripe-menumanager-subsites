@@ -5,13 +5,13 @@ namespace Guttmann\SilverStripe;
 use Heyday\MenuManager\MenuSet;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\HiddenField;
-use SilverStripe\ORM\DataExtension;
+use SilverStripe\Core\Extension;
 use SilverStripe\ORM\DB;
 use SilverStripe\Security\Permission;
 use SilverStripe\Subsites\Model\Subsite;
 use SilverStripe\Subsites\State\SubsiteState;
 
-class MenuSetExtension extends DataExtension
+class MenuSetExtension extends Extension
 {
     private static $has_one = array(
         'Subsite' => Subsite::class
