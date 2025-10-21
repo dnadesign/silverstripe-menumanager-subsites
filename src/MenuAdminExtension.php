@@ -13,7 +13,7 @@ class MenuAdminExtension extends Extension
     {
         if ($this->owner->modelClass === MenuSet::class) {
             $gridFieldName = $this->extSanitiseClassName($this->owner->modelClass);
-            $gridField = $form->Fields()->fieldByName($gridFieldName);
+            $gridField = $form->Fields()->fieldByName($gridFieldName ?? '');
             $list = $gridField->getList();
             $filteredList = $list->filter(
                 [
