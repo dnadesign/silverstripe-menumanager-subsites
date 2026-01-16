@@ -10,21 +10,20 @@ class SubsiteMenuManagerTemplateProvider implements TemplateGlobalProvider
 {
     public static function get_template_global_variables()
     {
-        return array(
+        return [
             'SubsiteMenuSet' => 'SubsiteMenuSet'
-        );
+        ];
     }
 
     public static function SubsiteMenuSet($name)
     {
         $subsiteID =  SubsiteState::singleton()->getSubsiteId();
-        if($subsiteID > 0){
+        if ($subsiteID > 0) {
             $name .= '-' . $subsiteID;
         }
-        return MenuSet::get()->filter(array(
+        return MenuSet::get()->filter([
             'Name' => $name,
             'SubsiteID' => SubsiteState::singleton()->getSubsiteId()
-        ))->First();
+        ])->First();
     }
-
 }

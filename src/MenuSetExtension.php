@@ -13,19 +13,19 @@ use SilverStripe\Subsites\State\SubsiteState;
 
 class MenuSetExtension extends Extension
 {
-    private static $has_one = array(
+    private static $has_one = [
         'Subsite' => Subsite::class
-    );
+    ];
 
     public function updateCMSFields(FieldList $fields)
     {
-        $fields->push(new HiddenField('SubsiteID'));
+        $fields->push(HiddenField::create('SubsiteID'));
     }
 
     public function onBeforeWrite()
     {
-        if (!$this->owner->SubsiteID) {
-            $this->owner->SubsiteID = SubsiteState::singleton()->getSubsiteId();
+        if (!$this->getOwner()->SubsiteID) {
+            $this->getOwner()->SubsiteID = SubsiteState::singleton()->getSubsiteId();
         }
     }
 
@@ -35,56 +35,49 @@ class MenuSetExtension extends Extension
      */
     public function canDelete($member = null)
     {
-        $canDelete = parent::canDelete($member);
-
-        $existing = SubsiteMenuManagerTemplateProvider::SubsiteMenuSet($this->owner->Name);
-        $isDuplicate = $existing && $existing->ID !== $this->owner->ID;
+        $existing = SubsiteMenuManagerTemplateProvider::SubsiteMenuSet($this->getOwner()->Name);
+        $isDuplicate = $existing && $existing->ID !== $this->getOwner()->ID;
 
         if (!$isDuplicate) {
-            $defaultSets = $this->owner->config()->get('default_sets');
+            $defaultSets = $this->getOwner()->config()->get('default_sets');
             $subsiteID =  SubsiteState::singleton()->getSubsiteId();
-            if($subsiteID > 0){
+            if ($subsiteID > 0 && is_array($defaultSets)) {
                 foreach ($defaultSets as $defaultSet) {
                     $defaultSubsiteSetName = $defaultSet . '-' . $subsiteID;
-                    if($this->owner->Name === $defaultSubsiteSetName){
+                    if ($this->getOwner()->Name === $defaultSubsiteSetName) {
                         return false;
                     }
                 }
             }
         }
 
-        if ($canDelete !== null) {
-            return $canDelete;
-        }
-
         return Permission::check('MANAGE_MENU_SETS');
     }
 
-    public function requireDefaultRecords()
+    public function onRequireDefaultRecords()
     {
         $subsites = Subsite::all_sites();
-        $defaultSetNames = $this->owner->config()->get('default_sets') ?: array();
+        $defaultSetNames = $this->getOwner()->config()->get('default_sets') ?: [];
         $subsites->each(function ($subsite) use ($defaultSetNames) {
             Subsite::changeSubsite($subsite->ID);
 
-            if($subsite->ID > 0){
+            if ($subsite->ID > 0) {
                 foreach ($defaultSetNames as $name) {
                     $name = $name . '-' . $subsite->ID;
                     $existingRecord = MenuSet::get()->filter([
                         'Name' => $name,
                         'SubsiteID' => $subsite->ID,
                     ])->first();
-    
+
                     if (!$existingRecord) {
-                        $set = new MenuSet();
+                        $set = MenuSet::create();
                         $set->Name = $name;
                         $set->write();
-    
+
                         DB::alteration_message("MenuSet '$name' created for Subsite", 'created');
                     }
                 }
             }
         });
     }
-    
 }

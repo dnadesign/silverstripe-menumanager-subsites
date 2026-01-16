@@ -26,11 +26,11 @@ class MenuAdminExtension extends Extension
         return $form;
     }
 
-    /*
+    /**
      * This is required as we can't call the model admins sanitiseClassName
      */
     public function extSanitiseClassName($class)
     {
-        str_replace('\\', '-', $class);
+        return str_replace('\\', '-', $class);
     }
 }

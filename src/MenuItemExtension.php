@@ -16,7 +16,7 @@ class MenuItemExtension extends Extension
 
     public function updateCMSFields(FieldList $fields)
     {
-        $fields->push(new HiddenField('SubsiteID'));
+        $fields->push(HiddenField::create('SubsiteID'));
     }
 
     public function onBeforeWrite()
