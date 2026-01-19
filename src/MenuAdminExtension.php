@@ -13,7 +13,7 @@ class MenuAdminExtension extends Extension
     {
         if ($this->owner->modelClass === MenuSet::class) {
             $gridFieldName = $this->extSanitiseClassName($this->owner->modelClass);
-            $gridField = $form->Fields()->fieldByName($gridFieldName);
+            $gridField = $form->Fields()->fieldByName($gridFieldName ?? '');
             $list = $gridField->getList();
             $filteredList = $list->filter(
                 [
@@ -26,11 +26,11 @@ class MenuAdminExtension extends Extension
         return $form;
     }
 
-    /*
+    /**
      * This is required as we can't call the model admins sanitiseClassName
      */
     public function extSanitiseClassName($class)
     {
-        str_replace('\\', '-', $class);
+        return str_replace('\\', '-', $class);
     }
 }
