@@ -59,25 +59,31 @@ class MenuSetExtension extends Extension
         $subsites = Subsite::all_sites();
         $defaultSetNames = $this->getOwner()->config()->get('default_sets') ?: [];
         $subsites->each(function ($subsite) use ($defaultSetNames) {
-            Subsite::changeSubsite($subsite->ID);
+            if ($subsite->ID <= 0) {
+                return;
+            }
 
-            if ($subsite->ID > 0) {
-                foreach ($defaultSetNames as $name) {
-                    $name = $name . '-' . $subsite->ID;
-                    $existingRecord = MenuSet::get()->filter([
-                        'Name' => $name,
-                        'SubsiteID' => $subsite->ID,
-                    ])->first();
+            SubsiteState::singleton()->withState(
+                function (SubsiteState $state) use ($subsite, $defaultSetNames) {
+                    $state->setSubsiteId($subsite->ID);
 
-                    if (!$existingRecord) {
-                        $set = MenuSet::create();
-                        $set->Name = $name;
-                        $set->write();
+                    foreach ($defaultSetNames as $name) {
+                        $name = $name . '-' . $subsite->ID;
+                        $existingRecord = MenuSet::get()->filter([
+                            'Name' => $name,
+                            'SubsiteID' => $subsite->ID,
+                        ])->first();
 
-                        DB::alteration_message("MenuSet '$name' created for Subsite", 'created');
+                        if (!$existingRecord) {
+                            $set = MenuSet::create();
+                            $set->Name = $name;
+                            $set->write();
+
+                            DB::alteration_message("MenuSet '$name' created for Subsite", 'created');
+                        }
                     }
                 }
-            }
+            );
         });
     }
 }
